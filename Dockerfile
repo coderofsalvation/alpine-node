@@ -1,4 +1,4 @@
-FROM alpine:3.2
+FROM armbuild/alpine:3.2
 
 # ENV VERSION=v0.10.40 CFLAGS="-D__USE_MISC"
 # ENV VERSION=v0.12.7
@@ -11,7 +11,12 @@ ENV CONFIG_FLAGS="--fully-static --without-npm" DEL_PKGS="libgcc libstdc++" RM_D
 RUN apk add --update curl make gcc g++ python linux-headers paxctl libgcc libstdc++ && \
   curl -sSL https://nodejs.org/dist/${VERSION}/node-${VERSION}.tar.gz | tar -xz && \
   cd /node-${VERSION} && \
-  ./configure --prefix=/usr ${CONFIG_FLAGS} && \
+  ./configure --prefix=/usr ${CONFIG_FLAGS} `grep -q ARM /proc/cpuinfo && echo --without-snapshot`  \
+   grep -q ARM /proc/cpuinfo && {                             \                                                                                                                              
+     echo "monkeypatch vfpv2->vfpv3 (deprecated for ARM)" &&  \                                                                                                                              
+     CONFIG_FLAGS="$CONFIG_FLAGS --without-snapshot";         \                                                                                                                              
+     sed -i 's/vfpv2/vfpv3/g' configure;                      \                                                                                                                              
+  };                                                          \
   make -j$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
   make install && \
   paxctl -cm /usr/bin/node && \
