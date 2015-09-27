@@ -1,6 +1,8 @@
 Minimal Node.js Docker Images (18MB, or 6.6MB compressed)
 ---------------------------------------------------------
 
+get the pre-compiled ARM tarball [here](/node-v4.1.1-armhf-alpinelinux.tar.gz)
+
 Versions v4.1.1, v0.12.7, v0.10.40, and io.js – built on [Alpine Linux](https://alpinelinux.org/).
 
 All versions use the one [mhart/alpine-node](https://hub.docker.com/r/mhart/alpine-node/) repository,
